@@ -419,6 +419,17 @@ const changeHistory = async (username) => {
   }
 }
 
+const acceptMatch = () => {
+  if (!settings.accept)
+    return true;
+  setTimeout(() => {
+    let acceptW = document.querySelector(".queue-header-time");
+    let acceptB = document.querySelector(".match-ready-btn");
+    if (acceptW && acceptB)
+        acceptB.click();
+  }, 5000);
+}
+
 // get W/L of last 5 esportal matches of a player
 const getRecentStats = async (username) => {
   const currentTime = Date.now();
@@ -763,6 +774,7 @@ chrome.runtime.onMessage.addListener(
           settings.profiles = data.profiles;
           settings.levels = data.levels;
           settings.medals = data.medals;
+          settings.accept = data.accept;
         });
         console.log("Updated profile: "+settings.profiles+settings.levels+settings.medals);
         if (settings.profiles) {
@@ -782,6 +794,7 @@ chrome.runtime.onMessage.addListener(
           initLobby();
         }
       }
+      acceptMatch();
       sendResponse("Received message " + sender + ": ", request);
       return true;
     }

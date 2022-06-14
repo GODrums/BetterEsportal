@@ -1,5 +1,6 @@
 let switchLobbies = document.getElementById("lobbies");
 let switchProfiles = document.getElementById("profiles");
+let switchAccept = document.getElementById("accept");
 let switchStream = document.getElementById("stream");
 let switchLevels = document.getElementById("levels");
 let switchMedals = document.getElementById("medals");
@@ -17,6 +18,13 @@ chrome.storage.local.get("profiles", (data) => {
     switchProfiles.checked = true;
   } else {
     switchProfiles.checked = false;
+  }
+});
+chrome.storage.local.get("accept", (data) => {
+  if (data.accept) {
+    switchAccept.checked = true;
+  } else {
+    switchAccept.checked = false;
   }
 });
 chrome.storage.local.get("stream", (data) => {
@@ -46,6 +54,9 @@ document.getElementById("lobbies").addEventListener('change', e => {
 });
 document.getElementById("profiles").addEventListener('change', e => {
   chrome.storage.local.set({'profiles': e.target.checked});
+});
+document.getElementById("accept").addEventListener('change', e => {
+  chrome.storage.local.set({'accept': e.target.checked});
 });
 document.getElementById("stream").addEventListener('change', e => {
   chrome.storage.local.set({'stream': e.target.checked});
