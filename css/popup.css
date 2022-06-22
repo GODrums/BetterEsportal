@@ -155,9 +155,20 @@ input:checked + .slider:before {
 }
 
 .about {
+  margin: 20 0 0 0;
   text-align: center;
 }
 
 .about p {
+  margin: 15 0 5 0;
+}
+
+.about a {
+  display: inline-block;
   margin: 8 0 8 0;
+  text-decoration: none;
+  color: #fff;
+  background-color: #00a9e9;
+  padding: 10px 20px;
+  text-align: center;
 }

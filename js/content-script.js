@@ -258,7 +258,7 @@ const createProfileStats = async (username) => {
   boxes[1].children[0].children[1].innerHTML = "AVERAGE K/D";
   boxes[2].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.rounds+recent2.rounds)).toFixed(2);
   boxes[2].children[0].children[1].innerHTML = "AVERAGE K/R";
-  boxes[3].children[0].children[0].innerHTML = ((recent1.hs+recent2.hs)/(recent1.kills+recent2.kills)).toFixed(2) * 100;
+  boxes[3].children[0].children[0].innerHTML = (((recent1.hs+recent2.hs)/(recent1.kills+recent2.kills)) * 100).toFixed(0);
   boxes[3].children[0].children[1].innerHTML = "AVERAGE HEADSHOTS %";
   boxes[4].children[0].children[0].innerHTML = (recent1.wins.filter(x => x == true).length+recent2.wins.filter(x => x == true).length)/(recent1.wins.length+recent2.wins.length)*100;
   boxes[4].children[0].children[1].innerHTML = "WIN RATE %";
@@ -302,6 +302,7 @@ const clearStream = () => {
     }, TIMEOUT);
 }
 
+//shows current rating in the top bar
 const ratingScale = async (username) => {
   const user = await getEsportal(username);
   const elo = user.elo;
@@ -352,7 +353,7 @@ const ratingScale = async (username) => {
   barDiv.appendChild(bar);
   barDiv.appendChild(bottomDiv);
 
-  ratingDiv.style.cssText = "display: block;";
+  ratingDiv.style.cssText = "display: block; font-size: 13px;";
 
   ratingDiv.appendChild(topDiv);
   ratingDiv.appendChild(barDiv);
@@ -360,6 +361,7 @@ const ratingScale = async (username) => {
   element.appendChild(ratingDiv);
 }
 
+//adds the like ratio to a users profile
 const likeRatio = async (username) => {
   const data = await getEsportal(username);
   if (data) {
@@ -455,22 +457,44 @@ const init = async (url) => {
   while (!document.querySelectorAll(".top-bar-dropdown")[0])
         await new Promise(r => setTimeout(r, 100));
 
-  let username = document.getElementsByClassName("top-bar-item")[2].href.split('/')[5];
-
+  let lastSite = document.getElementsByClassName("top-bar-item")[2].href.split('/')[5];
   //TODO: Getting username => maybe through extension interface +
-  ratingScale(username);
-  if (msg === "profile") {
-    clearLevels();
-    clearMedals();
-    initProfile();
-  } else if (msg === "match") {
-    initLobbyFaceit();
-  } else if (msg == "tournament") {
-    let tab = url.split('/')[7];
-    if (tab == "match")
-      initLobbyFaceit();
-  }
-
+  ratingScale(lastSite);
+  chrome.storage.local.get(null, (data) => {
+    settings.profiles = data.profiles;
+    settings.levels = data.levels;
+    settings.medals = data.medals;
+    settings.accept = data.accept;
+    settings.stream = data.stream;
+    settings.lobbies = data.lobbies;
+  });
+  console.debug("Waiting 1.5s for the Chrome storage");
+  //Chrome Storage is async and takes about 1.5s
+  setTimeout(() => {
+    if (typeof settings.profiles === 'undefined') {
+      console.debug("Chrome storage returned undefined values. Assuming true.");
+      settings.profiles = true;
+      settings.levels = true;
+      settings.medals = true;
+      settings.accept = true;
+      settings.stream = true;
+    }
+    if (msg === "profile") {
+      if (settings.profiles)
+        initProfile(lastSite);
+      if (settings.levels)
+        clearLevels();
+      if (settings.medals)
+        clearMedals();
+    } else if (msg === "match") {
+      if (settings.lobbies)
+        initLobby();
+    } else if (msg == "tournament") {
+      let tab = url.split('/')[7];
+      if (tab == "match")
+        initLobbyFaceit();
+    }
+  }, 1500);
 }
 
 const initProfile = async (username) => {
@@ -527,10 +551,22 @@ const initProfile = async (username) => {
   }, TIMEOUT);
 }
 
+// mutex for the lobby init method
+var mutexLobby = false;
+
 // init player stats, winrate,
 const initLobby = async () => {
   while (!document.querySelectorAll(".match-lobby-team-tables")[1])
         await new Promise(r => setTimeout(r, 100));
+
+  // prevent multiple execution => check for mutex
+  if (document.querySelectorAll(".faceitRank").length > 0 || mutexLobby)
+    return true;
+
+  console.debug("Starting lobby initialization.");
+
+  // aquire mutex/lock for the method
+  mutexLobby = true;
 
   let players = [...document.getElementsByClassName("match-lobby-team-username")];
   let playerData = [];
@@ -565,7 +601,8 @@ const initLobby = async () => {
       faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 11px;";
 
       faceitElo.innerHTML = playerData[i].elo;
-      faceitElo.style.cssText = "float: right; color: #FF5500;";
+      faceitElo.style.cssText = "float: right; color: #FF5500; margin: 1em 0 0 0;";
+      faceitElement.className = "faceitRank";
       faceitElement.style.cssText = "display: inline";
       faceitElement.target = "_BLANK";
       faceitElement.href = `https://faceit.com/en/players/${playerData[i].nickname}`;
@@ -638,6 +675,9 @@ const initLobby = async () => {
       rows[0].cells[0].innerHTML += eloavg;
     }
   }
+
+  //release mutex for the method
+  mutexLobby = false;
 }
 
 // faceit like lobby
@@ -759,10 +799,6 @@ const initLobbyFaceit = async () => {
   }
 }
 
-//all user settings
-var settings = {};
-//prevent double execution
-var lastSite = null;
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
       const site = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
@@ -770,35 +806,27 @@ chrome.runtime.onMessage.addListener(
         return true;
       lastSite = site;
       if (request.message === "profile") {
-        chrome.storage.local.get(null, (data) => {
-          settings.profiles = data.profiles;
-          settings.levels = data.levels;
-          settings.medals = data.medals;
-          settings.accept = data.accept;
-        });
-        console.log("Updated profile: "+settings.profiles+settings.levels+settings.medals);
-        if (settings.profiles) {
+        if (settings.profiles)
           initProfile(site);
-        }
-        if (settings.levels) {
+        if (settings.levels)
           clearLevels();
-        }
-        if (settings.medals) {
+        if (settings.medals)
           clearMedals();
-        }
       } else if (request.message === "lobby") {
-        chrome.storage.local.get('lobbies', (data) => {
-          settings.lobbies = data.lobbies;
-        });
-        if (settings.lobbies) {
+        if (settings.lobbies)
           initLobby();
-        }
       }
-      acceptMatch();
+      if (settings.accept)
+        acceptMatch();
       sendResponse("Received message " + sender + ": ", request);
       return true;
     }
 );
+
+//all user settings
+var settings = {};
+//prevent double execution
+var lastSite = null;
 
 let url = window.location.href;
 if (url.includes("esportal")) {
