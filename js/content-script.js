@@ -1,6 +1,6 @@
 // get Esportal data from Esportal username
 const getEsportal = async (user) => {
-  const response = await fetch(`https://api.esportal.com/user_profile/get?username=${user}`);
+  const response = await fetch(`https://esportal.com/api/user_profile/get?_=1&username=${user}`);
   const data = await response.json();
   if (data) {
     return data;
@@ -122,7 +122,7 @@ const getFaceitStats = async (username) => {
 
 // TODO: Fix 429 too many requests error => timeout and reattempt?
 const getMatchEsportal = async (matchID) => {
-  const response = await fetch(`https://api.esportal.com/match/get?_=1&id=${matchID}`);
+  const response = await fetch(`https://esportal.com/api/match/get?_=1&id=${matchID}`);
   if (!response.ok) {
     //console.log("Esportal match request error code "+response.status);
     return {};
@@ -144,7 +144,7 @@ function mostCommonElement(arr) {
 }
 
 const getLastMatchesEsportal = async (userID, page, limit = 8) => {
-  const response = await fetch(`https://api.esportal.com/user_profile/get_latest_matches?id=${userID}&page=${page}&v=2`);
+  const response = await fetch(`https://esportal.com/api/user_profile/get_latest_matches?id=${userID}&page=${page}&v=2`);
   const data = await response.json();
   let wins = [];
   //map ids
@@ -189,7 +189,7 @@ const getLastMatchesEsportal = async (userID, page, limit = 8) => {
 }
 
 const getStatsLastMatchesEsportal = async (userID, page, limit = 8) => {
-  const response = await fetch(`https://api.esportal.com/user_profile/get_latest_matches?id=${userID}&page=${page}&v=2`);
+  const response = await fetch(`https://esportal.com/api/user_profile/get_latest_matches?id=${userID}&page=${page}&v=2`);
   const data = await response.json();
   //[kills, deaths, headshots, rounds, wins]
   // wins: wins-deaths; => winrate = 50%+(wins/2)*10
