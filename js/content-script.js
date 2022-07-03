@@ -436,7 +436,7 @@ const acceptMatch = () => {
 const getRecentStats = async (username) => {
   const currentTime = Date.now();
   let userID = await getEsportalID(username);
-  const response = await fetch(`https://api.esportal.com/user_profile/get_latest_matches?_=${currentTime}&id=${userID}&page=1&v=2`);
+  const response = await fetch(`https://esportal.com/api/user_profile/get_latest_matches?_=${currentTime}&id=${userID}&page=1&v=2`);
   const matches = await response.json();
   let recent = [];
   if(!matches) {
