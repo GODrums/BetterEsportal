@@ -252,15 +252,20 @@ const createProfileStats = async (username) => {
     boxes[i].appendChild(value);
     row.appendChild(boxes[i]);
   }
-  boxes[0].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.maps.length+recent2.maps.length)).toFixed(0);
+  if (recent1 && recent2) {
+    boxes[0].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.maps.length+recent2.maps.length)).toFixed(0);
+    boxes[1].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.deaths+recent2.deaths)).toFixed(2);
+    boxes[2].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.rounds+recent2.rounds)).toFixed(2);
+    boxes[3].children[0].children[0].innerHTML = (((recent1.hs+recent2.hs)/(recent1.kills+recent2.kills)) * 100).toFixed(0);
+    boxes[4].children[0].children[0].innerHTML = (recent1.wins.filter(x => x == true).length+recent2.wins.filter(x => x == true).length)/(recent1.wins.length+recent2.wins.length)*100;
+  }
+  else
+    for (let i=0; i<5; i++)
+      boxes[i].children[0].children[0].innerHTML = 0;
   boxes[0].children[0].children[1].innerHTML = "AVERAGE KILLS";
-  boxes[1].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.deaths+recent2.deaths)).toFixed(2);
   boxes[1].children[0].children[1].innerHTML = "AVERAGE K/D";
-  boxes[2].children[0].children[0].innerHTML = ((recent1.kills+recent2.kills)/(recent1.rounds+recent2.rounds)).toFixed(2);
   boxes[2].children[0].children[1].innerHTML = "AVERAGE K/R";
-  boxes[3].children[0].children[0].innerHTML = (((recent1.hs+recent2.hs)/(recent1.kills+recent2.kills)) * 100).toFixed(0);
   boxes[3].children[0].children[1].innerHTML = "AVERAGE HEADSHOTS %";
-  boxes[4].children[0].children[0].innerHTML = (recent1.wins.filter(x => x == true).length+recent2.wins.filter(x => x == true).length)/(recent1.wins.length+recent2.wins.length)*100;
   boxes[4].children[0].children[1].innerHTML = "WIN RATE %";
 
 
@@ -448,7 +453,7 @@ const getRecentStats = async (username) => {
     else
       recent.push("<span style='color: #a80000; margin-right: 2px;'>L</span>");
   }
-  return recent;
+  return recent.reverse();
 }
 
 const init = async (url) => {
@@ -504,7 +509,7 @@ const initProfile = async (username) => {
   setTimeout(() => {
     //add a link to the rank symbol
     let iconClass = document.querySelector('.user-profile-rank');
-    if (iconClass.parentNode) {
+    if (iconClass && iconClass.parentNode) {
       let parent = iconClass.parentNode;
       parent.removeChild(iconClass);
       let ranking = document.createElement("a");
@@ -653,8 +658,8 @@ const initLobby = async () => {
     //move streams from table to top info bar
     for (let i = 0; i < tables.length; i++) {
       let rows = tables[i].rows;
-      rows[0].deleteCell(4);
-      //rows[0].deleteCell(1);
+      if (rows[0].cells.length > 3)
+        rows[0].deleteCell(4);
       for (let j=1; j<rows.length; j++) {
         if(rows[j].cells[4].innerHTML.length > 1) {
           let stream = rows[j].cells[4].children[0];
@@ -662,7 +667,6 @@ const initLobby = async () => {
             streamHolder.appendChild(stream);
         }
         rows[j].deleteCell(4);
-        //rows[j].deleteCell(1);
         let cell = rows[j].insertCell(2);
         if(playerRecent[(i*5)+(j-1)])
           cell.innerHTML = playerRecent[(i*5)+(j-1)].join("");
