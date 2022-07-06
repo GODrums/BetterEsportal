@@ -5,11 +5,17 @@ permissions needed:
  - scripting: for using the executeScript function
 */
 
-let color = '#3aa757';
-
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.sync.set({ color });
-  console.log('Default background color set to %cgreen', `color: ${color}`);
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason == "install") {
+    chrome.storage.local.set({'lobbies': true});
+    chrome.storage.local.set({'profiles': true});
+    chrome.storage.local.set({'accept': false});
+    chrome.storage.local.set({'stream': true});
+    chrome.storage.local.set({'levels': true});
+    chrome.storage.local.set({'medals': true});
+  } else if (details.reason == "update") {
+    //TODO: on update
+  }
 });
 
 
