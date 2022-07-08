@@ -82,3 +82,9 @@ for (i = 0; i < coll.length; i++) {
     }
   });
 }
+
+//localization
+//stackoverflow.com/questions/25467009/internationalization-of-html-pages-for-my-google-chrome-extension
+document.querySelectorAll('[data-locale]').forEach(elem => {
+  elem.innerText = chrome.i18n.getMessage(elem.dataset.locale)
+})

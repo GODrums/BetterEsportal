@@ -36,6 +36,7 @@ const getEsportalID = async (username) => {
 }
 
 // get Faceit data from Esportal username
+// V4 has limit of 10.000 requests/hour
 const getFaceit = async (username) => {
   let steamID = await getSteamID(username);
   if(!steamID) return null;
@@ -221,6 +222,7 @@ const getStatsLastMatchesEsportal = async (userID, page, limit = 8) => {
 }
 
 // create stats box on profile page for last 10 matches
+// TODO: ratingchange, opkills, clutches, opening success
 const createProfileStats = async (username) => {
   const userID = await getEsportalID(username);
   let recent1 = await getLastMatchesEsportal(userID, 1);
@@ -262,12 +264,11 @@ const createProfileStats = async (username) => {
   else
     for (let i=0; i<5; i++)
       boxes[i].children[0].children[0].innerHTML = 0;
-  boxes[0].children[0].children[1].innerHTML = "AVERAGE KILLS";
-  boxes[1].children[0].children[1].innerHTML = "AVERAGE K/D";
-  boxes[2].children[0].children[1].innerHTML = "AVERAGE K/R";
-  boxes[3].children[0].children[1].innerHTML = "AVERAGE HEADSHOTS %";
-  boxes[4].children[0].children[1].innerHTML = "WIN RATE %";
-
+  boxes[0].children[0].children[1].innerHTML = chrome.i18n.getMessage("avgKills");
+  boxes[1].children[0].children[1].innerHTML = chrome.i18n.getMessage("avgKD");
+  boxes[2].children[0].children[1].innerHTML = chrome.i18n.getMessage("avgKR");
+  boxes[3].children[0].children[1].innerHTML = chrome.i18n.getMessage("avgHS");
+  boxes[4].children[0].children[1].innerHTML = chrome.i18n.getMessage("winrate");
 
   holder.appendChild(header);
   holder.appendChild(row);
@@ -376,7 +377,7 @@ const likeRatio = async (username) => {
 
       let eClass = document.querySelector('.user-profile-thumbs');
       if (eClass) {
-          let element = `<span style="display: block; width: 100%; text-align: center; color: #fff; font-size: 11px;">${ratio} Like-Ratio</span>`;
+          let element = `<span style="display: block; width: 100%; text-align: center; color: #fff; font-size: 11px;">${ratio} ${chrome.i18n.getMessage("likeRatio")}</span>`;
           eClass.insertAdjacentHTML('beforeend', element);
       }
   }
@@ -632,7 +633,7 @@ const initLobby = async () => {
     let avgT1 = ((sumT1/(sumT1+sumT2))*100).toFixed(0);
     let avgT2 = 100-avgT1;
     let elementWin = document.createElement("div");
-    elementWin.innerHTML = "Calculated Real Winchance";
+    elementWin.innerHTML = chrome.i18n.getMessage("calcWinchance");
     let elementT1 = document.createElement("span");
     let elementT2 = document.createElement("span");
     let barT1 = document.createElement("div");
@@ -672,7 +673,7 @@ const initLobby = async () => {
           cell.innerHTML = playerRecent[(i*5)+(j-1)].join("");
       }
       let recentCell = rows[0].insertCell(2);
-      recentCell.innerHTML = "Last 5";
+      recentCell.innerHTML = chrome.i18n.getMessage("last5");
       //display average faceit elo
       //TODO: change to be displayed as last row of table + Faceit LVL Symbol / AVG KD / AVG Esportal rating
       let eloavg = " (avg: <span style='color: #FF5500;'>"+((i==0?sumT1:sumT2)/5).toFixed(0)+"</span>)";

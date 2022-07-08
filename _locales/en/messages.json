@@ -1,0 +1,69 @@
+{
+  "appDesc": {
+    "message": "Improves Esportal by adding necessary features and customizations.",
+    "description": "The description of the extension, displayed in the web store."
+  },
+  "likeRatio": {
+    "message": "Like-Ratio"
+  },
+  "lastmatchesTitle": {
+    "message": "Last 10 matches"
+  },
+  "calcWinchance": {
+    "message": "Calculated Real Winchance"
+  },
+  "avgKills": {
+    "message": "AVERAGE KILLS"
+  },
+  "avgKD": {
+    "message": "K/D"
+  },
+  "avgKR": {
+    "message": "K/R"
+  },
+  "avgHS": {
+    "message": "HEADSHOT %"
+  },
+  "winrate": {
+    "message": "WIN RATE %"
+  },
+  "last5": {
+    "message": "Last 5"
+  },
+  "elementCustomization": {
+    "message": "Customization"
+  },
+  "elementLobbies": {
+    "message": "Faceit ranks in Lobbies"
+  },
+  "elementStats": {
+    "message": "Extended stats on profiles"
+  },
+  "elementAccept": {
+    "message": "Automatically accept matches"
+  },
+  "elementStream": {
+    "message": "Disable the embedded Twitch stream"
+  },
+  "elementLevels": {
+    "message": "Remove levels from profiles"
+  },
+  "elementMedals": {
+    "message": "Remove medals from profiles"
+  },
+  "elementAbout": {
+    "message": "About"
+  },
+  "elementUpdates": {
+    "message": "Look for updates"
+  },
+  "elementContact": {
+    "message": "Contact me"
+  },
+  "elementWarning1": {
+    "message": "You may need to reload the page for changes to become active."
+  },
+  "elementWarning2": {
+    "message": "Real-time lobby features may take up to 10 seconds to load. Please be patient."
+  }
+}

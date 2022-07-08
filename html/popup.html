@@ -6,9 +6,8 @@
   <body>
     <div class="header">
       <h2>BetterEsportal</h2>
-      <span class="headerVersion">V1.0</span>
-      <p>You may need to reload the page for changes to become active.</p>
-      <p>Real-time lobby features may take up to 10 seconds to load. Please be patient.</p>
+      <p data-locale="elementWarning1">You may need to reload the page for changes to become active.</p>
+      <p data-locale="elementWarning2">Real-time lobby features may take up to 10 seconds to load. Please be patient.</p>
       <hr style="width:90%;" size="3", color=grey>
     </div>
     <div class="main">
@@ -16,21 +15,21 @@
         <button type="button" class="collapsible headText">Features</button>
         <div class="collapse">
           <div class="element lobbies">
-            <p>Faceit ranks in Lobbies</p>
+            <p data-locale="elementLobbies">Faceit ranks in Lobbies</p>
             <label class="switch">
               <input type="checkbox" id="lobbies">
               <span class="slider round"></span>
             </label>
           </div>
           <div class="element stats">
-            <p>Extended stats on profiles</p>
+            <p data-locale="elementStats">Extended stats on profiles</p>
             <label class="switch">
               <input type="checkbox" id="profiles">
               <span class="slider round"></span>
             </label>
           </div>
           <div class="element accept">
-            <p>Automatically accept matches.<br><b>Experimental feature!</b></p>
+            <p data-locale="elementAccept">Automatically accept matches.<br><b>Experimental feature!</b></p>
             <label class="switch">
               <input type="checkbox" id="accept">
               <span class="slider round"></span>
@@ -40,24 +39,24 @@
       </div>
       <hr size="3", color=grey>
       <div class="customization">
-        <button type="button" class="collapsible headText">Customization</button>
+        <button type="button" class="collapsible headText" data-locale="elementCustomization">Customization</button>
         <div class="collapse">
           <div class="element removeStream">
-            <p>Disable the embedded Twitch stream</p>
+            <p data-locale="elementStream">Disable the embedded Twitch stream</p>
             <label class="switch">
               <input type="checkbox" id="stream">
               <span class="slider round"></span>
             </label>
           </div>
           <div class="element removeLevels">
-            <p>Remove levels from profiles</p>
+            <p data-locale="elementLevels">Remove levels from profiles</p>
             <label class="switch">
               <input type="checkbox" id="levels">
               <span class="slider round"></span>
             </label>
           </div>
           <div class="element removeMedals">
-            <p>Remove medals from profiles</p>
+            <p data-locale="elementMedals">Remove medals from profiles</p>
             <label class="switch">
               <input type="checkbox" id="medals">
               <span class="slider round"></span>
@@ -67,10 +66,10 @@
       </div>
       <hr size="3", color=grey>
       <div class="about">
-        <span class="headText">About</span>
-        <p>Version: 1.0</p>
-        <a href="https://chrome.google.com/webstore/detail/betteresportal/iklnneabdldjlpgnpccikmcgnfedlnbi" target="_blank">Look for updates</a>
-        <a href="mailto:armin.stanitzok@outlook.de">Contact me</a>
+        <span class="headText" data-locale="elementAbout">About</span>
+        <p>Version: 1.0.2</p>
+        <a href="https://chrome.google.com/webstore/detail/betteresportal/iklnneabdldjlpgnpccikmcgnfedlnbi" target="_blank" data-locale="elementUpdates">Look for updates</a>
+        <a href="mailto:armin.stanitzok@outlook.de" data-locale="elementContact">Contact me</a>
       </div>
     </div>
     <script src="/js/popup.js"></script>

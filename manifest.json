@@ -1,5 +1,11 @@
 {
-   "action": {
+  "name": "BetterEsportal",
+  "version": "1.0.2",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
+  "icons": { "64": "/img/betteresportal_logo64.png",
+    "128": "/img/betteresportal_logo128.png" },
+  "action": {
       "default_popup": "/html/popup.html"
    },
    "background": {
@@ -10,15 +16,10 @@
       "matches": [ "https://esportal.com/*" ],
       "run_at": "document_end"
    } ],
-   "icons": { "64": "/img/betteresportal_logo64.png",
-     "128": "/img/betteresportal_logo128.png" },
    "options_page": "/html/options.html",
-   "description": "Improves Esportal by adding necessary features and customizations.",
    "host_permissions": [ "https://api.esportal.com/*", "https://api.faceit.com/*"],
    "manifest_version": 3,
-   "name": "BetterEsportal",
    "permissions": [ "tabs", "storage"],
-   "version": "1.0",
    "web_accessible_resources": [ {
       "matches": [ "https://esportal.com/*" ],
       "resources": [ "img/*"]

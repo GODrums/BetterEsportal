@@ -1,0 +1,69 @@
+{
+  "appDesc": {
+    "message": "Ergänzt Esportal durch hilfreiche Features und Anpassungsmöglichkeiten.",
+    "description": "The description of the extension, displayed in the web store."
+  },
+  "likeRatio": {
+    "message": "Like-Verhältnis"
+  },
+  "lastmatchesTitle": {
+    "message": "Letzte 10 Matches"
+  },
+  "calcWinchance": {
+    "message": "Berechnete Gewinnchance"
+  },
+  "avgKills": {
+    "message": "Durchschnittliche Tötungen"
+  },
+  "avgKD": {
+    "message": "K/D-RATE"
+  },
+  "avgKR": {
+    "message": "K/R-RATE"
+  },
+  "avgHS": {
+    "message": "HEADSHOT %"
+  },
+  "winrate": {
+    "message": "WIN RATE %"
+  },
+  "last5": {
+    "message": "Letzte 5"
+  },
+  "elementCustomization": {
+    "message": "Anpassung"
+  },
+  "elementLobbies": {
+    "message": "Faceit Ränge in Lobbies"
+  },
+  "elementStats": {
+    "message": "Erweiterte Statistiken auf Profilen"
+  },
+  "elementAccept": {
+    "message": "Automatisch Matches annehmen"
+  },
+  "elementStream": {
+    "message": "Entferne den integrierten Twitch Stream"
+  },
+  "elementLevels": {
+    "message": "Entferne Level aus Profilen"
+  },
+  "elementMedals": {
+    "message": "Entferne Medaillen aus Profilen"
+  },
+  "elementAbout": {
+    "message": "Über"
+  },
+  "elementUpdates": {
+    "message": "Nach Updates suchen"
+  },
+  "elementContact": {
+    "message": "Kontaktiere mich"
+  },
+  "elementWarning1": {
+    "message": "Damit Änderungen aktiv werden, bitte die Seite neu laden."
+  },
+  "elementWarning2": {
+    "message": "Echtzeit-Features können bis zu 10 Sekunden brauchen um angezeigt zu werden."
+  }
+}
