@@ -393,7 +393,7 @@ const changeHistory = async (username) => {
       let matchID = item.getAttribute("href");
       matchID = item.getAttribute("href").substring(matchID.lastIndexOf("/") + 1);
       const match = await getMatchEsportal(matchID);
-      if(match !== null &&  match.id > 0 && match.players && match.players.length > 0) {
+      if(match !== null &&  match.id > 0 && match.players && match.players.length > 0 && match.team1_score != null) {
         // stats: rounds won, rounds lost, kills, deaths
         let stats = [0, 0, 0, 0];
         match.players.every(player => {
