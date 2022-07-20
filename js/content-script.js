@@ -73,7 +73,11 @@ const getFaceit2 = async (username) => {
   });
 }
 
-//unusable because of CORS policy
+//V1: https://api.faceit.com/search/v1/?limit=1&query=${faceit_name}
+//V1: https://api.faceit.com/users/v1/nicknames/${faceit_name}
+//V1: https://api.faceit.com/sheriff/v1/bans/${faceit_guid}
+//V4: https://open.faceit.com/data/v4/search/players?nickname=${faceit_name}&game=csgo&offset=0&limit=1
+
 const getFaceitBanStatus = async (faceit_name) => {
   const response = await fetch(`https://open.faceit.com/data/v4/search/players?nickname=${faceit_name}&game=csgo&offset=0&limit=1`, {
   						method: `GET`,
@@ -84,6 +88,7 @@ const getFaceitBanStatus = async (faceit_name) => {
   const data = await response.json();
   if (data) {
     return data.items[0].status;
+    //return data.payload.players.results[0].status;
   } else {
     return null;
   }
@@ -474,11 +479,11 @@ const init = async (url) => {
     settings.stream = data.stream;
     settings.lobbies = data.lobbies;
   });
-  console.debug("Waiting 1.5s for the Chrome storage");
+  console.debug("[BetterEsportal] Waiting 1.5s for the Chrome storage");
   //Chrome Storage is async and takes about 1.5s
   setTimeout(() => {
     if (typeof settings.profiles === 'undefined') {
-      console.debug("Chrome storage returned undefined values. Assuming true.");
+      console.debug("[BetterEsportal] Chrome storage returned undefined values. Assuming true.");
       settings.profiles = true;
       settings.levels = true;
       settings.medals = true;
@@ -569,7 +574,7 @@ const initLobby = async () => {
   if (document.querySelectorAll(".faceitRank").length > 0 || mutexLobby)
     return true;
 
-  console.debug("Starting lobby initialization.");
+  console.debug("[BetterEsportal] Starting lobby initialization.");
 
   // aquire mutex/lock for the method
   mutexLobby = true;
@@ -619,8 +624,10 @@ const initLobby = async () => {
       players[i].parentElement.appendChild(faceitDiv);
 
       // mark players who are banned on Faceit
-      if (playerData[i].banned)
-        players[i].parentElement.cssText += "background-color: rgba(225, 74, 0, 0.52);";
+      if (playerData[i].banned) {
+        console.debug(`[BetterEsportal] ${playerData[i].nickname} is banned on Faceit.`);
+        players[i].parentElement.parentElement.style.backgroundColor = "rgba(225, 74, 0, 0.52)";
+      }
     }
   }
   let scoreElement = document.getElementsByClassName("match-lobby-win-chance");
