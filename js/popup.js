@@ -5,6 +5,8 @@ let switchStream = document.getElementById("stream");
 let switchLevels = document.getElementById("levels");
 let switchMedals = document.getElementById("medals");
 
+document.getElementById("version").innerHTML = "Version: "+chrome.runtime.getManifest().version;
+
 
 chrome.storage.local.get("lobbies", (data) => {
   if (data.lobbies) {
