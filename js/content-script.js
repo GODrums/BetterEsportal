@@ -233,6 +233,9 @@ const createProfileStats = async (username) => {
   let recent1 = await getLastMatchesEsportal(userID, 1);
   let recent2 = await getLastMatchesEsportal(userID, 2, 2);
 
+  while (!document.getElementsByClassName("user-stats-view-latest-match"))
+        await new Promise(r => setTimeout(r, 100));
+
   let parent = document.getElementsByClassName("user-stats-latest-matches")[0].parentElement;
   let holder = document.createElement("div");
   let header = document.createElement("div");
@@ -388,7 +391,10 @@ const likeRatio = async (username) => {
   }
 }
 
+// add KD and score to past matches
 const changeHistory = async (username) => {
+  while (!document.getElementsByClassName("user-stats-view-latest-match"))
+        await new Promise(r => setTimeout(r, 100));
   let mClasses = document.getElementsByClassName("user-stats-view-latest-match");
   if (mClasses && mClasses.length > 0) {
     document.getElementsByClassName("user-stats-latest-matches")[0].getElementsByTagName("th")[3].insertAdjacentHTML('afterend', "<th>K/D</th>");
@@ -425,13 +431,14 @@ const changeHistory = async (username) => {
           node.innerHTML = "<span>"+node.innerHTML+" ("+stats[0]+" - "+stats[1]+")</span>";
         }
       } else {
-        let row = "<td><span style='color: #c0c6d1;'>0</span></td>";
+        let row = "<td><span style='color: #c0c6d1;'>-</span></td>";
         item.parentElement.parentElement.children[3].insertAdjacentHTML('afterend', row);
       }
     }//);
   }
 }
 
+// accept matches via the popup
 const acceptMatch = () => {
   if (!settings.accept)
     return true;
@@ -524,7 +531,6 @@ const initProfile = async (username) => {
       parent.appendChild(ranking);
     }
     //add faceit rank+elo
-    //let ratingSection = document.querySelector(".user-profile-rank-rating").querySelectorAll(".section")[1];
     let ratingSection = document.querySelector(".user-profile-rank-elo");
 
     if(faceitdata.level == 0) {
