@@ -317,6 +317,7 @@ const clearStream = () => {
 }
 
 //shows current rating in the top bar
+//TODO: Update rating after matches
 const ratingScale = async (username) => {
   const user = await getEsportal(username);
   const elo = user.elo;
@@ -639,6 +640,16 @@ const initLobby = async () => {
   let scoreElement = document.getElementsByClassName("match-lobby-win-chance");
   let sumT1 = 0;
   let sumT2 = 0;
+  //gather detection
+  if (!scoreElement || scoreElement.length == 0) {
+    let winChanceElement = document.getElementsByClassName("match-lobby-page-header");
+    if (winChanceElement && winChanceElement[0].children.length == 2) {
+      let newScore = document.createElement("div");
+      newScore.className = "match-lobby-win-chance";
+      winChanceElement[0].insertBefore(newScore, winChanceElement[0].children[1]);
+      scoreElement = [newScore];
+    }
+  }
   if (scoreElement && scoreElement.length > 0) {
     sumT1 = playerData.slice(0, 5).map(a => a.elo).reduce((a,b) => a+b, 0) * (5/dataPerTeam[0]);
     sumT2 = playerData.slice(-5).map(a => a.elo).reduce((a,b) => a+b, 0) * (5/dataPerTeam[1]);
