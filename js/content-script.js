@@ -451,6 +451,19 @@ const acceptMatch = () => {
   }, 5000);
 }
 
+//delete a friend from your friend list
+//useful for friends with deleted accounts
+const deleteFriend = async (user_id) => {
+  let formData = new FormData();
+  formData.append('friend_user_id', user_id);
+  fetch(`https://esportal.com/api/friends/remove`, {
+						method: `POST`,
+						body: formData
+	}).then(async(response) => {
+    return response.ok;
+  });
+}
+
 // get W/L of last 5 esportal matches of a player
 const getRecentStats = async (username) => {
   const currentTime = Date.now();
