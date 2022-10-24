@@ -643,7 +643,7 @@ const initLobby = async () => {
       faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 5px;";
 
       faceitElo.innerHTML = playerData[i].elo;
-      faceitElo.style.cssText = "float: right; color: #FF5500; margin: 0.5em 0 0 0;";
+      faceitElo.style.cssText = "float: right; color: #FF5500; margin: 0.3em 0 0 0;";
       faceitElement.className = "faceitRank";
       faceitElement.style.cssText = "display: inline";
       faceitElement.target = "_BLANK";
