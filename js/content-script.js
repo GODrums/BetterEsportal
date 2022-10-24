@@ -286,12 +286,11 @@ const createProfileStats = async (username) => {
 //remove adds in the header
 const clearHeadBar = () => {
   setTimeout(() => {
-    let items = document.querySelector(".top-bar-left").querySelectorAll(".is-hidden-mobile");
-    if (items && items.length > 0) {
-      for (let i=1; i<items.length; i++)
-        items[i].remove();
+    let updateButton = document.querySelectorAll('header button')[0];
+    if (updateButton) {
+      updateButton.style.display = "none";
     }
-  }, TIMEOUT);
+  }, TIMEOUT*3);
 }
 
 //remove level container
@@ -310,10 +309,11 @@ const clearMedals = () => {
 //remove twitch stream from site
 const clearStream = () => {
   setTimeout(() => {
-        let elements = document.querySelectorAll(".live-streams");
-        if (elements && elements.length > 0)
-            elements.forEach(e => { e.remove(); });
-    }, TIMEOUT);
+      let stream = document.querySelector("iframe[src*='twitch.tv']");
+      if (stream)
+        stream.parentElement.style.display = "none";
+      //stream.parentElement.remove()
+    }, TIMEOUT*5);
 }
 
 //shows current rating in the top bar
@@ -486,10 +486,9 @@ const getRecentStats = async (username) => {
 const init = async (url) => {
   let msg = url.split('/')[4];
 
-  while (!document.querySelectorAll(".top-bar-dropdown")[0])
-        await new Promise(r => setTimeout(r, 100));
+  //await new Promise(r => setTimeout(r, 500));
 
-  let lastSite = document.getElementsByClassName("top-bar-item")[2].href.split('/')[5];
+  //let lastSite = document.getElementsByClassName("top-bar-item")[2].href.split('/')[5];
   //TODO: Getting username => maybe through extension interface +
   ratingScale(lastSite);
   chrome.storage.local.get(null, (data) => {
@@ -519,8 +518,8 @@ const init = async (url) => {
       if (settings.medals)
         clearMedals();
     } else if (msg === "match") {
-      if (settings.lobbies)
-        initLobby();
+      //if (settings.lobbies)
+      initLobby();
     } else if (msg == "tournament") {
       let tab = url.split('/')[7];
       if (tab == "match")
@@ -587,29 +586,41 @@ var mutexLobby = false;
 
 // init player stats, winrate,
 const initLobby = async () => {
-  while (!document.querySelectorAll(".match-lobby-team-tables")[1])
+  while (!document.querySelectorAll('[class^="MatchTeamSectionstyle__"'))
         await new Promise(r => setTimeout(r, 100));
+
 
   // prevent multiple execution => check for mutex
   if (document.querySelectorAll(".faceitRank").length > 0 || mutexLobby)
     return true;
 
-  console.debug("[BetterEsportal] Starting lobby initialization.");
-
   // aquire mutex/lock for the method
   mutexLobby = true;
 
-  let players = [...document.getElementsByClassName("match-lobby-team-username")];
+  console.debug("[BetterEsportal] Lobby detected. Initializing...");
+
+  let players = [...document.querySelectorAll('div[class^="PlayerTableInfoRowstyle__"')];
+  while (players.length == 0) {
+    await new Promise(r => setTimeout(r, 500));
+    console.debug("[BetterEsportal] Waiting for players to load...");
+    players = [...document.querySelectorAll('div[class^="PlayerTableInfoRowstyle__"')];
+  }
+
+  if (players.length == 12) {
+    players.shift();
+    players.splice(5, 1);
+  }
   let playerData = [];
   let playerRecent = [];
   for (let i=0; i<players.length;i++) {
-    let name = players[i].getElementsByTagName("span")[0].innerHTML;
+    let name = players[i].getElementsByTagName("h4")[0].innerHTML;
     let faceitdata = await getFaceitStats(name);
     let recentdata = await getRecentStats(name);
-    //let faceitdata = players[i].getElementsByTagName("span")[0].innerHTML;
+    
     playerData.push(faceitdata);
     playerRecent.push(recentdata);
   }
+  
   //account for players without faceit account
   let dataPerTeam = [0, 0];
   for (let i=0; i<players.length;i++) {
@@ -620,7 +631,7 @@ const initLobby = async () => {
       faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 11px;";
       faceitDiv.className = "Tipsy-inlineblock-wrapper";
       faceitDiv.appendChild(faceitIcon);
-      players[i].parentElement.appendChild(faceitDiv);
+      players[i].firstChild.after(faceitDiv);
     } else {
       dataPerTeam[i<5?0:1] += 1;
       let faceitDiv = document.createElement("div");
@@ -629,10 +640,10 @@ const initLobby = async () => {
       let faceitElo = document.createElement("p");
       faceitDiv.className = "Tipsy-inlineblock-wrapper";
       faceitIcon.src = chrome.runtime.getURL(`img/faceit/faceit${playerData[i].level}.svg`);
-      faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 11px;";
+      faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 5px;";
 
       faceitElo.innerHTML = playerData[i].elo;
-      faceitElo.style.cssText = "float: right; color: #FF5500; margin: 1em 0 0 0;";
+      faceitElo.style.cssText = "float: right; color: #FF5500; margin: 0.5em 0 0 0;";
       faceitElement.className = "faceitRank";
       faceitElement.style.cssText = "display: inline";
       faceitElement.target = "_BLANK";
@@ -641,20 +652,21 @@ const initLobby = async () => {
       faceitElement.appendChild(faceitIcon);
       faceitElement.appendChild(faceitElo);
       faceitDiv.appendChild(faceitElement);
-      players[i].parentElement.appendChild(faceitDiv);
+      players[i].firstChild.after(faceitDiv);
 
       // mark players who are banned on Faceit
       if (playerData[i].banned) {
         console.debug(`[BetterEsportal] ${playerData[i].nickname} is banned on Faceit.`);
-        players[i].parentElement.parentElement.style.backgroundColor = "rgba(225, 74, 0, 0.52)";
+        players[i].style.backgroundColor = "rgba(225, 74, 0, 0.52)";
       }
     }
   }
-  let scoreElement = document.getElementsByClassName("match-lobby-win-chance");
+
+  let scoreElement = document.querySelector('div[class^="WinChancestyle__StyledWinChance-"');
   let sumT1 = 0;
   let sumT2 = 0;
   //gather detection
-  if (!scoreElement || scoreElement.length == 0) {
+  /*if (!scoreElement || scoreElement.length == 0) {
     let winChanceElement = document.getElementsByClassName("match-lobby-page-header");
     if (winChanceElement && winChanceElement[0].children.length == 2) {
       let newScore = document.createElement("div");
@@ -662,34 +674,35 @@ const initLobby = async () => {
       winChanceElement[0].insertBefore(newScore, winChanceElement[0].children[1]);
       scoreElement = [newScore];
     }
-  }
-  if (scoreElement && scoreElement.length > 0) {
+  }*/
+  if (scoreElement && scoreElement.children.length > 0) {
     sumT1 = playerData.slice(0, 5).map(a => a.elo).reduce((a,b) => a+b, 0) * (5/dataPerTeam[0]);
     sumT2 = playerData.slice(-5).map(a => a.elo).reduce((a,b) => a+b, 0) * (5/dataPerTeam[1]);
 
     let avgT1 = ((sumT1/(sumT1+sumT2))*100).toFixed(0);
     let avgT2 = 100-avgT1;
-    let elementWin = document.createElement("div");
-    elementWin.innerHTML = chrome.i18n.getMessage("calcWinchance");
-    let elementT1 = document.createElement("span");
-    let elementT2 = document.createElement("span");
-    let barT1 = document.createElement("div");
-    let barT2 = document.createElement("div");
-    barT1.style.cssText = `margin: 5px 2px; height: 16px; background: linear-gradient(270deg,#FF8500 0%,#FF5500 100%); width: ${avgT1}%;`;
-    elementT1.innerHTML = avgT1 + "%";
-    barT2.style.cssText = `margin: 5px 2px; height: 16px; background: linear-gradient(270deg,#FF5500 0%,#FF8500 100%); width: ${avgT2}%;`;
-    elementT2.innerHTML = avgT2 + "%";
 
-    let elementParent = document.createElement("div");
-    elementParent.className = "match-lobby-win";
-    elementParent.appendChild(elementT1);
-    elementParent.appendChild(barT1);
-    elementParent.appendChild(barT2);
-    elementParent.appendChild(elementT2);
+    let winchanceHeader = scoreElement.children[0].cloneNode(true);
+    winchanceHeader.children[0].innerText = "BetterEsportal Win Chance (Faceit)";
+    winchanceHeader.removeChild(winchanceHeader.children[1]);
+    let winchanceBars = scoreElement.children[1].cloneNode(true);
+    winchanceBars.children[0].children[0].children[0].style.width = `${avgT1}%`;
+    winchanceBars.children[0].children[0].children[1].style.width = `${avgT2}%`;
+    let winchanceNewText = document.createElement("div");
+    winchanceNewText.style = "text-align: center; margin-top: 13px; font-size: 13px; letter-spacing: 0.1em; color: rgb(105, 117, 140);";
+    winchanceNewText.innerText = `${avgT1}% - ${avgT2}%`;
+    winchanceBars.children[0].firstChild.after(winchanceNewText);
+    scoreElement.lastChild.after(winchanceHeader, winchanceBars);
 
-    scoreElement[0].appendChild(elementWin);
-    scoreElement[0].appendChild(elementParent);
+    let playersText = [...document.querySelectorAll('span[class^="PlayerTableCellstyle__PlayerTableHeader"')];
+    if (playersText) {
+      playersText[0].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT1/5).toFixed(0)}</span>)`;
+      playersText[3].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT2/5).toFixed(0)}</span>)`;
+    }
   }
+  mutexLobby = false;
+  return;
+
   let tables = document.getElementsByClassName("match-lobby-team-tables");
   if (tables) {
     let streamHolder = document.getElementsByClassName("match-lobby-info")[0].children[1];
@@ -843,20 +856,21 @@ const initLobbyFaceit = async () => {
 
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
+      console.debug("[BetterEsportal] Received message from background script:", request.message);
       const site = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
-      if (lastSite === site)
-        return true;
-      lastSite = site;
+      //if (lastSite === site)
+      //  return true;
+      //lastSite = site;
       if (request.message === "profile") {
-        if (settings.profiles)
-          initProfile(site);
+        //if (settings.profiles)
+        //  initProfile(site);
         if (settings.levels)
           clearLevels();
         if (settings.medals)
           clearMedals();
       } else if (request.message === "lobby") {
-        if (settings.lobbies)
-          initLobby();
+        //if (settings.lobbies)
+        initLobby();
       }
       if (settings.accept)
         acceptMatch();
@@ -867,11 +881,12 @@ chrome.runtime.onMessage.addListener(
 
 //all user settings
 var settings = {};
-//prevent double execution
+//prevent double execution / mutal exclusion
 var lastSite = null;
 
 let url = window.location.href;
 if (url.includes("esportal")) {
+  console.log("[BetterEsportal] Initializing extension. Applying settings...");
   clearHeadBar();
   clearStream();
   init(url);

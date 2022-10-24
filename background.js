@@ -39,7 +39,8 @@ chrome.tabs.onUpdated.addListener(
               }, response => {
                 console.log("Success for "+changeInfo.url);
               });
-            } else if (changeInfo.url.includes("match")) {
+            } else if (changeInfo.url.includes("match") && !changeInfo.url.includes("matchmaking")) {
+              console.log("Sending lobby message.")
               chrome.tabs.sendMessage(tabId, {
                   message: 'lobby',
                   url: changeInfo.url
