@@ -599,7 +599,6 @@ const initLobby = async () => {
 
   console.debug("[BetterEsportal] Lobby detected. Initializing...");
 
-  // document.querySelectorAll('div[class^="PlayerTableInfoRowstyle__"')
   let players = [...document.querySelectorAll('.sc-dplrdh')];
   while (players.length == 0) {
     await new Promise(r => setTimeout(r, 500));
@@ -663,7 +662,7 @@ const initLobby = async () => {
     }
   }
 
-  let scoreElement = document.querySelector('div[class^="WinChancestyle__StyledWinChance-"');
+  let scoreElement = document.querySelector('.sc-kDZQpm');
   let sumT1 = 0;
   let sumT2 = 0;
   //gather detection
@@ -695,7 +694,7 @@ const initLobby = async () => {
     winchanceBars.children[0].firstChild.after(winchanceNewText);
     scoreElement.lastChild.after(winchanceHeader, winchanceBars);
 
-    let playersText = [...document.querySelectorAll('span[class^="PlayerTableCellstyle__PlayerTableHeader"')];
+    let playersText = [...document.querySelectorAll('.sc-cTcUcm')];
     if (playersText) {
       playersText[0].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT1/5).toFixed(0)}</span>)`;
       playersText[3].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT2/5).toFixed(0)}</span>)`;
@@ -865,10 +864,10 @@ chrome.runtime.onMessage.addListener(
       if (request.message === "profile") {
         //if (settings.profiles)
         //  initProfile(site);
-        if (settings.levels)
-          clearLevels();
-        if (settings.medals)
-          clearMedals();
+        //if (settings.levels)
+        //  clearLevels();
+        //if (settings.medals)
+        //  clearMedals();
       } else if (request.message === "lobby") {
         //if (settings.lobbies)
         initLobby();
