@@ -586,7 +586,7 @@ var mutexLobby = false;
 
 // init player stats, winrate,
 const initLobby = async () => {
-  while (!document.querySelectorAll('[class^="MatchTeamSectionstyle__"'))
+  while (!document.querySelector('ul'))
         await new Promise(r => setTimeout(r, 100));
 
 
@@ -599,11 +599,12 @@ const initLobby = async () => {
 
   console.debug("[BetterEsportal] Lobby detected. Initializing...");
 
-  let players = [...document.querySelectorAll('div[class^="PlayerTableInfoRowstyle__"')];
+  // document.querySelectorAll('div[class^="PlayerTableInfoRowstyle__"')
+  let players = [...document.querySelectorAll('.sc-dplrdh')];
   while (players.length == 0) {
     await new Promise(r => setTimeout(r, 500));
     console.debug("[BetterEsportal] Waiting for players to load...");
-    players = [...document.querySelectorAll('div[class^="PlayerTableInfoRowstyle__"')];
+    players = [...document.querySelectorAll('.sc-dplrdh')];
   }
 
   if (players.length == 12) {
