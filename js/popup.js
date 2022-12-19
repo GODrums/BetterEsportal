@@ -15,20 +15,8 @@ chrome.storage.local.get("lobbies", (data) => {
     switchLobbies.checked = false;
   }
 });
-chrome.storage.local.get("profiles", (data) => {
-  if (data.profiles) {
-    switchProfiles.checked = true;
-  } else {
-    switchProfiles.checked = false;
-  }
-});
-chrome.storage.local.get("accept", (data) => {
-  if (data.accept) {
-    switchAccept.checked = true;
-  } else {
-    switchAccept.checked = false;
-  }
-});
+switchProfiles.checked = false;
+switchAccept.checked = false;
 chrome.storage.local.get("stream", (data) => {
   if (data.stream) {
     switchStream.checked = true;
@@ -36,20 +24,8 @@ chrome.storage.local.get("stream", (data) => {
     switchStream.checked = false;
   }
 });
-chrome.storage.local.get("levels", (data) => {
-  if (data.levels) {
-    switchLevels.checked = true;
-  } else {
-    switchLevels.checked = false;
-  }
-});
-chrome.storage.local.get("medals", (data) => {
-  if (data.medals) {
-    switchMedals.checked = true;
-  } else {
-    switchMedals.checked = false;
-  }
-});
+switchLevels.checked = false;
+switchMedals.checked = false;
 
 document.getElementById("lobbies").addEventListener('change', e => {
   chrome.storage.local.set({'lobbies': e.target.checked});

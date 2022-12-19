@@ -599,7 +599,8 @@ const initLobby = async () => {
 
   console.debug("[BetterEsportal] Lobby detected. Initializing...");
 
-  let players = [...document.querySelectorAll('.sc-dplrdh')];
+  let playersClass = Array.from(document.querySelectorAll('span')).find(el => el.textContent === 'K/D').parentElement.parentElement.className.split(' ')[0];
+  let players = [...document.querySelectorAll(`.${playersClass}`)];
   while (players.length == 0) {
     await new Promise(r => setTimeout(r, 500));
     console.debug("[BetterEsportal] Waiting for players to load...");
@@ -609,6 +610,9 @@ const initLobby = async () => {
   if (players.length == 12) {
     players.shift();
     players.splice(5, 1);
+  } else {
+    console.log("[BetterEsportal] Error: Player count is "+players.length+". Trying to proceed anyway...");
+    //return false;
   }
   let playerData = [];
   let playerRecent = [];
@@ -662,7 +666,8 @@ const initLobby = async () => {
     }
   }
 
-  let scoreElement = document.querySelector('.sc-kDZQpm');
+  //let scoreElement = document.querySelector('.sc-kDZQpm');
+  let scoreElement = Array.from(document.querySelectorAll('span')).find(el => el.textContent === 'Win Chance').parentElement.parentElement;
   let sumT1 = 0;
   let sumT2 = 0;
   //gather detection
@@ -694,10 +699,11 @@ const initLobby = async () => {
     winchanceBars.children[0].firstChild.after(winchanceNewText);
     scoreElement.lastChild.after(winchanceHeader, winchanceBars);
 
-    let playersText = [...document.querySelectorAll('.sc-cTcUcm')];
+    //let playersText = [...document.querySelectorAll('.sc-cTcUcm')];
+    let playersText = Array.from(document.querySelectorAll('span')).filter(el => el.textContent === 'Player');
     if (playersText) {
       playersText[0].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT1/5).toFixed(0)}</span>)`;
-      playersText[3].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT2/5).toFixed(0)}</span>)`;
+      playersText[1].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT2/5).toFixed(0)}</span>)`;
     }
   }
   mutexLobby = false;
@@ -733,125 +739,6 @@ const initLobby = async () => {
 
   //release mutex for the method
   mutexLobby = false;
-}
-
-// faceit like lobby
-const initLobbyFaceit = async () => {
-  while (!document.querySelectorAll(".match-lobby-team-tables")[1])
-        await new Promise(r => setTimeout(r, 100));
-
-  let players = [...document.getElementsByClassName("match-lobby-team-username")];
-  let playerData = [];
-  let playerRecent = [];
-  let playerStats = [];
-  for (let i=0; i<players.length;i++) {
-    let name = players[i].getElementsByTagName("span")[0].innerHTML;
-    let faceitdata = await getFaceitStats(name);
-    let recentdata = await getRecentStats(name);
-    //let user = await getEsportal(name);
-    //let userID = user.id;
-    //let stats1 = await getStatsLastMatchesEsportal(userID, 1);
-    //let stats2 = await getStatsLastMatchesEsportal(userID, 2, 2);
-    playerData.push(faceitdata);
-    playerRecent.push(recentdata);
-    //if (stats1 && stats2)
-    //  playerStats[i] = [stats1.kills+stats2.kills, stats1.deaths+stats2.deaths, stats1.hs+stats2.hs, stats1.rounds+stats2.rounds, stats1.wins+stats2.wins, user.matches];
-  }
-  //number of players with faceit account
-  let dataPerTeam = [0, 0];
-  for (let i=0; i<players.length;i++) {
-    if (playerData[i].level == 0) {
-      let faceitDiv = document.createElement("div");
-      let faceitIcon = document.createElement("img");
-      faceitIcon.src = chrome.runtime.getURL(`img/faceit/faceit0.svg`);
-      faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 11px;";
-      faceitDiv.className = "Tipsy-inlineblock-wrapper";
-      faceitDiv.appendChild(faceitIcon);
-      players[i].parentElement.appendChild(faceitDiv);
-    } else {
-      dataPerTeam[i<5?0:1] += 1;
-      let faceitDiv = document.createElement("div");
-      let faceitElement = document.createElement("a");
-      let faceitIcon = document.createElement("img");
-      let faceitElo = document.createElement("p");
-      faceitDiv.className = "Tipsy-inlineblock-wrapper";
-      faceitIcon.src = chrome.runtime.getURL(`img/faceit/faceit${playerData[i].level}.svg`);
-      faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 11px;";
-
-      faceitElo.innerHTML = playerData[i].elo;
-      faceitElo.style.cssText = "color: #FF5500; display: inline;";
-      faceitElement.style.cssText = "display: inline";
-      faceitElement.target = "_BLANK";
-      faceitElement.href = `https://faceit.com/en/players/${playerData[i].nickname}`;
-
-      faceitElement.appendChild(faceitIcon);
-      faceitElement.appendChild(faceitElo);
-      faceitDiv.appendChild(faceitElement);
-      players[i].parentElement.appendChild(faceitDiv);
-
-      // mark players who are banned on Faceit
-      if (playerData[i].banned)
-        players[i].parentElement.parentElement.style.cssText = "background-color: rgba(225, 74, 0, 0.52);";
-    }
-  }
-  let scoreElement = document.getElementsByClassName("match-lobby-win-chance");
-  let sumT1 = 0;
-  let sumT2 = 0;
-  if (scoreElement && scoreElement.length > 0) {
-    sumT1 = playerData.slice(0, 5).map(a => a.elo).reduce((a,b) => a+b, 0) * (5/dataPerTeam[0]);
-    sumT2 = playerData.slice(-5).map(a => a.elo).reduce((a,b) => a+b, 0) * (5/dataPerTeam[1]);
-
-    let avgT1 = ((sumT1/(sumT1+sumT2))*100).toFixed(0);
-    let avgT2 = 100-avgT1;
-    let elementWin = document.createElement("div");
-    elementWin.innerHTML = "Calculated Real Winchance";
-    let elementT1 = document.createElement("span");
-    let elementT2 = document.createElement("span");
-    let barT1 = document.createElement("div");
-    let barT2 = document.createElement("div");
-    barT1.style.cssText = `margin: 5px 2px; height: 16px; background: linear-gradient(270deg,#FF8500 0%,#FF5500 100%); width: ${avgT1}%;`;
-    elementT1.innerHTML = avgT1 + "%";
-    barT2.style.cssText = `margin: 5px 2px; height: 16px; background: linear-gradient(270deg,#FF5500 0%,#FF8500 100%); width: ${avgT2}%;`;
-    elementT2.innerHTML = avgT2 + "%";
-
-    let elementParent = document.createElement("div");
-    elementParent.className = "match-lobby-win";
-    elementParent.appendChild(elementT1);
-    elementParent.appendChild(barT1);
-    elementParent.appendChild(barT2);
-    elementParent.appendChild(elementT2);
-
-    scoreElement[0].appendChild(elementWin);
-    scoreElement[0].appendChild(elementParent);
-  }
-  let tables = document.getElementsByClassName("match-lobby-team-tables");
-  if (tables) {
-    let streamHolder = document.getElementsByClassName("match-lobby-info")[0].children[1];
-    //move streams from table to top info bar
-    for (let i = 0; i < tables.length; i++) {
-      let rows = tables[i].rows;
-      rows[0].deleteCell(4);
-      //rows[0].deleteCell(1);
-      for (let j=1; j<rows.length; j++) {
-        if(rows[j].cells[4].innerHTML.length > 1) {
-          let stream = rows[j].cells[4].children[0];
-          if (!stream.classList.contains("match-lobby-team-tables-icon-headset"))
-            streamHolder.appendChild(stream);
-        }
-        rows[j].deleteCell(4);
-        //rows[j].deleteCell(1);
-        let cell = rows[j].insertCell(2);
-        if(playerRecent[(i*5)+(j-1)])
-          cell.innerHTML = playerRecent[(i*5)+(j-1)].join("");
-      }
-      let recentCell = rows[0].insertCell(2);
-      recentCell.innerHTML = "Last 5";
-      //display average faceit elo
-      //TODO: change to be displayed as last row of table + Faceit LVL Symbol / AVG KD / AVG Esportal rating
-      let eloavg = " (avg: <span style='color: #FF5500;'>"+((i==0?sumT1:sumT2)/5).toFixed(0)+"</span>)";
-      rows[0].cells[0].innerHTML += eloavg;
-    }
-  }
 }
 
 chrome.runtime.onMessage.addListener(
