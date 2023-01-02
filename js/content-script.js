@@ -541,12 +541,10 @@ const initProfile = async (username) => {
     ratingSection = ratingSection.firstChild;
     let ratingDiv = ratingSection.cloneNode(true);
     ratingDiv.className += " betteresportal-faceit-element";
-    if (ratingSection.className.includes("betteresportal-faceit-element")) {
-      ratingSection.style.borderRadius = "30px 30px 0px 0px;";
-    } else {
+    if (!ratingSection.className.includes("betteresportal-faceit-element")) {
       ratingSection.style.borderRadius = "0px";
     }
-    ratingDiv.style.borderRadius = "0px";
+    ratingDiv.style.borderRadius = "30px 30px 0px 0px";
     ratingSection = ratingSection.parentElement;
   
     let ratingHeader = ratingDiv.querySelector("h2");
