@@ -286,24 +286,11 @@ const createProfileStats = async (username) => {
 //remove adds in the header
 const clearHeadBar = () => {
   setTimeout(() => {
-    let updateButton = document.querySelectorAll('header button')[0];
+    let updateButton = document.querySelector('.sc-jOiSOi');
     if (updateButton) {
       updateButton.style.display = "none";
     }
   }, TIMEOUT*3);
-}
-
-//remove level container
-const clearLevels = () => {
-  setTimeout(() => {
-    document.querySelector(".user-profile-level-container").parentElement.remove();
-  }, TIMEOUT);
-}
-//remove medal container
-const clearMedals = () => {
-  setTimeout(() => {
-    document.querySelector(".user-profile-medal-column-header").parentElement.parentElement.remove();
-  }, TIMEOUT);
 }
 
 //remove twitch stream from site
@@ -384,10 +371,20 @@ const likeRatio = async (username) => {
       if (data.thumbs_down!=0)
         ratio = Math.round(data.thumbs_up / data.thumbs_down) + ":1";
 
-      let eClass = document.querySelector('.user-profile-thumbs');
+      //let eClass = document.querySelector('.user-profile-thumbs');
+      let oldElements = document.querySelectorAll('.betteresportal-likeratio');
+      if (oldElements) {
+        oldElements.forEach((element) => {
+          element.remove();
+        });
+      }
+      let eClass = document.querySelector('.sc-cDegIk');
       if (eClass) {
-          let element = `<span style="display: block; width: 100%; text-align: center; color: #fff; font-size: 11px;">${ratio} ${chrome.i18n.getMessage("likeRatio")}</span>`;
-          eClass.insertAdjacentHTML('beforeend', element);
+          //let element = `<div style="display: block; width: 100%; text-align: center; color: #fff; font-size: 11px;">${ratio} ${chrome.i18n.getMessage("likeRatio")}</div>`;
+          let element = `<div class="${eClass.className} betteresportal-likeratio" style="display: flex; justify-content: center; align-items: center; gap: 9px;"><svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" style="transform: translateY(-3px);" ><path d="M16.2426 6.34319C16.6331 5.95266 17.2663 5.95266 17.6568 6.34319C18.0474 6.73371 18.0474 7.36688 17.6568 7.7574L7.75734 17.6569C7.36681 18.0474 6.73365 18.0474 6.34313 17.6569C5.9526 17.2664 5.9526 16.6332 6.34313 16.2427L16.2426 6.34319Z" fill="grey" /><path d="M9.87866 9.87872C9.09761 10.6598 7.83128 10.6598 7.05023 9.87872C6.26918 9.09767 6.26918 7.83134 7.05023 7.05029C7.83128 6.26924 9.09761 6.26924 9.87866 7.05029C10.6597 7.83134 10.6597 9.09767 9.87866 9.87872Z" fill="grey" /><path d="M14.1213 16.9498C14.9023 17.7308 16.1687 17.7308 16.9497 16.9498C17.7308 16.1687 17.7308 14.9024 16.9497 14.1214C16.1687 13.3403 14.9023 13.3403 14.1213 14.1214C13.3403 14.9024 13.3403 16.1687 14.1213 16.9498Z" fill="grey" /></svg><h4 class="${eClass.children[0].children[1].className}">${ratio} ${chrome.i18n.getMessage("likeRatio")}</h4></div>`;
+          eClass.parentElement.insertAdjacentHTML('beforeend', element);
+      } else {
+        console.debug("[BetterEsportal] Could not find like ratio element.");
       }
   }
 }
@@ -451,19 +448,6 @@ const acceptMatch = () => {
   }, 5000);
 }
 
-//delete a friend from your friend list
-//useful for friends with deleted accounts
-const deleteFriend = async (user_id) => {
-  let formData = new FormData();
-  formData.append('friend_user_id', user_id);
-  fetch(`https://esportal.com/api/friends/remove`, {
-						method: `POST`,
-						body: formData
-	}).then(async(response) => {
-    return response.ok;
-  });
-}
-
 // get W/L of last 5 esportal matches of a player
 const getRecentStats = async (username) => {
   const currentTime = Date.now();
@@ -490,7 +474,7 @@ const init = async (url) => {
 
   //let lastSite = document.getElementsByClassName("top-bar-item")[2].href.split('/')[5];
   //TODO: Getting username => maybe through extension interface +
-  ratingScale(lastSite);
+  //ratingScale(lastSite);
   chrome.storage.local.get(null, (data) => {
     settings.profiles = data.profiles;
     settings.levels = data.levels;
@@ -499,7 +483,7 @@ const init = async (url) => {
     settings.stream = data.stream;
     settings.lobbies = data.lobbies;
   });
-  console.debug("[BetterEsportal] Waiting 1.5s for the Chrome storage");
+  console.debug("[BetterEsportal] Waiting 1.5s for the Chrome storage. Message: ", msg);
   //Chrome Storage is async and takes about 1.5s
   setTimeout(() => {
     if (typeof settings.profiles === 'undefined') {
@@ -512,7 +496,7 @@ const init = async (url) => {
     }
     if (msg === "profile") {
       if (settings.profiles)
-        initProfile(lastSite);
+        initProfile(url.split('/')[5]);
       if (settings.levels)
         clearLevels();
       if (settings.medals)
@@ -533,8 +517,9 @@ const initProfile = async (username) => {
 
   let faceitdata = await getFaceitStats(username);
   setTimeout(() => {
+    console.debug("[BetterEsportal] Starting profile customization");
     //add a link to the rank symbol
-    let iconClass = document.querySelector('.user-profile-rank');
+    let iconClass = document.querySelector('.sc-kEvSyQ');
     if (iconClass && iconClass.parentNode) {
       let parent = iconClass.parentNode;
       parent.removeChild(iconClass);
@@ -544,16 +529,41 @@ const initProfile = async (username) => {
       parent.appendChild(ranking);
     }
     //add faceit rank+elo
-    let ratingSection = document.querySelector(".user-profile-rank-elo");
-
+    //let ratingSection = document.querySelector(".user-profile-rank-elo");
+    let ratingSection = document.querySelector(".sc-fNALa");
+    if (!ratingSection) {
+      console.debug("[BetterEsportal] No rating section found. Aborting.");
+      return;
+    }
+    if (ratingSection.firstChild.className.includes("betteresportal-faceit-element")) {
+      ratingSection.removeChild(ratingSection.firstChild);
+    }
+    ratingSection = ratingSection.firstChild;
+    let ratingDiv = ratingSection.cloneNode(true);
+    ratingDiv.className += " betteresportal-faceit-element";
+    if (ratingSection.className.includes("betteresportal-faceit-element")) {
+      ratingSection.style.borderRadius = "30px 30px 0px 0px;";
+    } else {
+      ratingSection.style.borderRadius = "0px";
+    }
+    ratingDiv.style.borderRadius = "0px";
+    ratingSection = ratingSection.parentElement;
+  
+    let ratingHeader = ratingDiv.querySelector("h2");
+   if (ratingHeader) {
+      ratingHeader.innerHTML = "Faceit";
+    }
+    while (ratingDiv.children.length > 1)
+      ratingDiv.removeChild(ratingDiv.children[1]);
+  
     if(faceitdata.level == 0) {
       let faceitDiv = document.createElement("div");
-      faceitDiv.style.cssText = "height: 80px; width: 160px; margin-left: 10px; display: flex; justify-content: center; align-items: center; background: url("+chrome.runtime.getURL('img/faceit/faceit_background_nologo.png')+") center no-repeat;";
+      faceitDiv.style.cssText = "height: 80px; width: 160px; margin-left: 10px; display: flex; justify-content: center; align-items: center; background: url("+chrome.runtime.getURL('img/faceit/faceit_background_nologo.png')+") center no-repeat; margin: 0 auto;";
       let faceitElo = document.createElement("span");
       faceitElo.style.cssText = "color: #FF5500";
       faceitElo.innerHTML = "No Faceit Account";
       faceitDiv.appendChild(faceitElo);
-      ratingSection.appendChild(faceitDiv);
+      ratingDiv.appendChild(faceitDiv);
     } else {
       let faceitDiv = document.createElement("div");
       let faceitElement = document.createElement("a");
@@ -562,22 +572,19 @@ const initProfile = async (username) => {
       //ratingSection.style.cssText = "width: 35%;"
       faceitIcon.src = chrome.runtime.getURL(`img/faceit/faceit${faceitdata.level}.svg`);
       faceitIcon.style.cssText = "height: 40px; width: 40px; margin-right: 10px; vertical-align: middle;";
-      faceitDiv.style.cssText = "height: 80px; width: 160px; margin-left: 10px; display: flex; justify-content: center; align-items: center; background: url("+chrome.runtime.getURL('img/faceit/faceit_background_nologo.png')+") center no-repeat;";
+      faceitDiv.style.cssText = "height: 80px; width: 160px; margin-left: 10px; display: flex; justify-content: center; align-items: center; background: url("+chrome.runtime.getURL('img/faceit/faceit_background_nologo.png')+") center no-repeat;  margin: 0 auto;";
       //faceitElement.style.cssText = "";
       faceitElo.innerHTML = faceitdata.elo + " ELO";
       faceitElo.style.cssText = "color: #FF5500; display: inline";
       faceitElement.target = "_BLANK";
       faceitElement.href = `https://faceit.com/en/players/${faceitdata.nickname}`;
+      faceitElement.className = "betteresportal-faceit-rating-link";
       faceitElement.appendChild(faceitIcon);
       faceitElement.appendChild(faceitElo);
       faceitDiv.appendChild(faceitElement);
-      ratingSection.appendChild(faceitDiv);
+      ratingDiv.appendChild(faceitDiv);
     }
-
-    //add stats to the last played matches
-    //chrome.runtime.sendMessage({message: "here"});
-    changeHistory(username);
-    createProfileStats(username);
+    ratingSection.insertBefore(ratingDiv, ratingSection.children[0]);
   }, TIMEOUT);
 }
 
@@ -745,19 +752,12 @@ chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
       console.debug("[BetterEsportal] Received message from background script:", request.message);
       const site = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
-      //if (lastSite === site)
-      //  return true;
-      //lastSite = site;
       if (request.message === "profile") {
-        //if (settings.profiles)
-        //  initProfile(site);
-        //if (settings.levels)
-        //  clearLevels();
-        //if (settings.medals)
-        //  clearMedals();
+        if (settings.profiles)
+          initProfile(site);
       } else if (request.message === "lobby") {
-        //if (settings.lobbies)
-        initLobby();
+        if (settings.lobbies)
+          initLobby();
       }
       if (settings.accept)
         acceptMatch();

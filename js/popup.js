@@ -15,7 +15,13 @@ chrome.storage.local.get("lobbies", (data) => {
     switchLobbies.checked = false;
   }
 });
-switchProfiles.checked = false;
+chrome.storage.local.get("profiles", (data) => {
+  if (data.profiles) {
+    switchLobbies.checked = true;
+  } else {
+    switchLobbies.checked = false;
+  }
+});
 switchAccept.checked = false;
 chrome.storage.local.get("stream", (data) => {
   if (data.stream) {

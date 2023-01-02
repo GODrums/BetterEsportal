@@ -4,7 +4,7 @@
     "description": "The description of the extension, displayed in the web store."
   },
   "likeRatio": {
-    "message": "Like-Verhältnis"
+    "message": "Verhältnis"
   },
   "lastmatchesTitle": {
     "message": "Letzte 10 Matches"
