@@ -12,7 +12,7 @@
       "service_worker": "background.js"
    },
    "content_scripts": [ {
-      "js": [ "/js/content-script.js"],
+      "js": [ "/js/content-script.js", "/js/profile.js", "/js/lobby.js"],
       "matches": [ "https://esportal.com/*" ],
       "run_at": "document_end"
    } ],
