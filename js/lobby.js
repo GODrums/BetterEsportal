@@ -1,5 +1,3 @@
-
-
 // mutex for the lobby init method
 var mutexLobby = false;
 

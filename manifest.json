@@ -1,6 +1,6 @@
 {
   "name": "BetterEsportal",
-  "version": "1.1.2",
+  "version": "1.2.1",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
   "icons": { "64": "/img/betteresportal_logo64.png",
