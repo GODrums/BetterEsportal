@@ -77,7 +77,8 @@ const initProfile = async (username) => {
     let faceitdata = await getFaceitStats(username);
     setTimeout(() => {
         //add a link to the rank symbol
-        let iconClass = document.querySelector('.sc-kEvSyQ');
+        //let iconClass = document.querySelector('.sc-iXTxzR');
+        let iconClass = Array.from(document.querySelectorAll('h2')).find(el => el.textContent === username).parentElement.parentElement.parentElement.children[1];
         if (iconClass && iconClass.parentNode) {
             let parent = iconClass.parentNode;
             parent.removeChild(iconClass);
@@ -87,8 +88,8 @@ const initProfile = async (username) => {
             parent.appendChild(ranking);
         }
         //add faceit rank+elo
-        let ratingSection = document.querySelector(".sc-fNALa");
-        if (!ratingSection) {
+        let ratingSection = Array.from(document.querySelectorAll('h2')).find(el => el.textContent === 'Latest Medals').parentElement.parentElement.parentElement;
+        if (!ratingSection || ratingSection.children.length < 1) {
             console.debug("[BetterEsportal] No rating section found. Aborting.");
             return;
         }
