@@ -16,6 +16,12 @@ const initLobby = async () => {
 
   console.debug("[BetterEsportal] Lobby detected. Initializing...");
 
+  // show loading text
+  let gameStatusDiv = document.querySelector('.gameStatus');
+  if (gameStatusDiv) {
+    gameStatusDiv.insertAdjacentHTML('afterend', `<div class="${gameStatusDiv.className} betteresportal-gameStatus" style="color: #FF5500; margin-top: 10px;"><p style="margin: 10px 0 10px 0;">BetterEsportal is loading</p><span class="be-loader"></span></div>`);
+  }
+
   let playersClass = Array.from(document.querySelectorAll('span')).find(el => el.textContent === 'K/D').parentElement.parentElement.className.split(' ')[0];
   let players = [...document.querySelectorAll(`.${playersClass}`)];
   while (players.length == 0) {
@@ -120,6 +126,15 @@ const initLobby = async () => {
       playersText[0].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT1 / 5).toFixed(0)}</span>)`;
       playersText[1].innerHTML = `Player (avg: <span style='color: #FF5500;'>${(sumT2 / 5).toFixed(0)}</span>)`;
     }
+  }
+
+  // remove the loading text
+  let loadingDiv = document.querySelector(".betteresportal-gameStatus");
+  if (loadingDiv) {
+    //loadingDiv.remove();
+    loadingDiv.children[0].innerHTML = "BetterEsportal loaded!";
+    loadingDiv.style.color = "rgb(127, 208, 76)";
+    loadingDiv.children[1].remove();
   }
 
   //release mutex for the method

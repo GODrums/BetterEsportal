@@ -14,6 +14,7 @@
    "content_scripts": [ {
       "js": [ "/js/content-script.js", "/js/profile.js", "/js/lobby.js"],
       "matches": [ "https://esportal.com/*" ],
+      "css" : [ "/css/lobby.css" ],
       "run_at": "document_end"
    } ],
    "options_page": "/html/options.html",
