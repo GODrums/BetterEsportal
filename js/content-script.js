@@ -283,10 +283,10 @@ const createProfileStats = async (username) => {
   parent.parentElement.insertBefore(holder, parent);
 }
 
-//remove adds in the header
+//remove ads / upgrade button in the header
 const clearHeadBar = () => {
   setTimeout(() => {
-    let updateButton = document.querySelector('.sc-jOiSOi');
+    let updateButton = document.querySelector('.sc-cUEOzv');
     if (updateButton) {
       updateButton.style.display = "none";
     }
