@@ -47,7 +47,15 @@ chrome.tabs.onUpdated.addListener(
               }, response => {
                 console.log("Success for "+changeInfo.url);
               });
+            } else {
+              chrome.tabs.sendMessage(tabId, {
+                message: 'otherwise',
+                url: changeInfo.url
+            }, response => {
+              console.log("Success for "+changeInfo.url);
+            });
             }
+
         }
     }
 );

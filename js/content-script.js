@@ -286,9 +286,15 @@ const createProfileStats = async (username) => {
 //remove ads / upgrade button in the header
 const clearHeadBar = () => {
   setTimeout(() => {
-    let updateButton = document.querySelector('.sc-cUEOzv');
+    //find updateButton
+    let updateButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent === 'Upgrade');
     if (updateButton) {
       updateButton.style.display = "none";
+    }
+    //find ad
+    let adButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent === 'Remove ads');
+    if (adButton) {
+      adButton.parentElement.style.display = "none";
     }
   }, TIMEOUT * 3);
 }
@@ -374,6 +380,7 @@ chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
     console.debug("[BetterEsportal] Received message from background script:", request.message);
     const site = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
+    clearHeadBar();
     if (request.message === "profile") {
       if (settings.profiles)
         initProfile(site);
