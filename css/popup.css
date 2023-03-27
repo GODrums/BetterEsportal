@@ -23,6 +23,10 @@ h2 {
   margin-bottom: 0;
 }
 
+.header{
+  margin-top: 10px;
+}
+
 .collapsible {
   cursor: pointer;
   width: 100%;

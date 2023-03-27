@@ -55,7 +55,7 @@ const initLobby = async () => {
       let faceitDiv = document.createElement("div");
       let faceitIcon = document.createElement("img");
       faceitIcon.src = chrome.runtime.getURL(`img/faceit/faceit0.svg`);
-      faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative; top: 11px;";
+      faceitIcon.style.cssText = "height: 30px; width: 30px; margin-left: 10px; position: relative;";
       faceitDiv.className = "Tipsy-inlineblock-wrapper";
       faceitDiv.appendChild(faceitIcon);
       players[i].firstChild.after(faceitDiv);
