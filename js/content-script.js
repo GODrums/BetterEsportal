@@ -287,14 +287,16 @@ const createProfileStats = async (username) => {
 const clearHeadBar = () => {
   setTimeout(() => {
     //find updateButton
-    let updateButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent === 'Upgrade');
-    if (updateButton) {
-      updateButton.style.display = "none";
+    let updateButton = Array.from(document.querySelectorAll('button')).filter(el => el.textContent === 'Upgrade');
+    if (updateButton.length > 0) {
+      for (let i = 0; i < updateButton.length; i++)
+        updateButton[i].style.display = "none";
     }
     //find ad
-    let adButton = Array.from(document.querySelectorAll('button')).find(el => el.textContent === 'Remove ads');
-    if (adButton) {
-      adButton.parentElement.style.display = "none";
+    let adButton = Array.from(document.querySelectorAll('button')).filter(el => el.textContent === 'Remove ads');
+    if (adButton.length > 0) {
+      for (let i = 0; i < adButton.length; i++)
+        adButton[i].parentElement.style.display = "none";
     }
   }, TIMEOUT * 3);
 }
